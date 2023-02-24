@@ -11,3 +11,9 @@ import imgUrl from './assets/images/12.png'
 const theImg = document.createElement('img')
 theImg.src = imgUrl
 document.body.appendChild(theImg)
+
+class App {
+    static a = 123
+}
+
+console.log(App.a);

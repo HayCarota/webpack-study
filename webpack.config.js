@@ -3,15 +3,17 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-  mode: "development",
+  mode: "development", // 打包文件会出现注释，方便浏览
+  // mode: "production",
   entry: "./src/main.js", // 入口
   output: {
     path: path.join(__dirname, "dist"), // 出口路径
-    filename: "main.js" // 出口文件名
+    filename: "main.js", // 出口文件名
+    assetModuleFilename: "assets/[name]_[hash][ext]", // 静态文件打包后的路径及文件名（默认是走全局的，如果有独立的设置就按照自己独立的设置来。）
   },
   // “plugins”里面实例化插件
   plugins: [
-    new CleanWebpackPlugin(), // 自动删除"dist"文件夹的实例化
+    new CleanWebpackPlugin(), // 打包时自动删除本地"dist"文件夹的实例化
     new HtmlWebpackPlugin({
       template: "./src/index.html",
       filename: "index.html"
@@ -38,7 +40,10 @@ module.exports = {
       {
         // webpack5版本
         test: /\.(png|jpg|gif|jpeg)$/i,
-        type: "asset"
+        type: "asset",
+        generator: {
+          filename: "images/[name]_[hash][ext]" // 独立的配置
+        }
       },
       //   {// webpack5之前版本
       //     test: /\.(png|jpg|gif|jpeg)$/i,
@@ -48,15 +53,25 @@ module.exports = {
       //         options: {
       //           limi: 8 * 1024 // 配置limit, 超过8k, 不转, file-loader复制, 随机名, 输出文件
       //         }
-      //       }    
+      //       }
       //     ]
       //   }
       {
         // webpack5默认内部不认识这些文件, 所以当做静态资源直接输出即可
-        test: /\.(eot|svg|ttf|woff|woff2)$/,   
+        test: /\.(eot|svg|ttf|woff|woff2)$/,
         type: "asset/resource",
         generator: {
-          filename: "font-[name].[hash:6][ext]"
+          filename: "fonts/font-[name].[hash:6][ext]" // 独立的配置
+        }
+      },
+      {
+        test: /\.js$/,
+        exclude: /(node_modules)/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-env"] // 预设:转码规则(用bable开发环境本来预设的) babel-loader 可以让webpack 对高版本js语法做降级处理后打包
+          }
         }
       }
     ]
